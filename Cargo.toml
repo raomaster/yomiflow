@@ -1,0 +1,59 @@
+[package]
+name = "yomiflow"
+version = "0.1.0"
+edition = "2021"
+description = "Cross-platform, local-first real-time audio translation engine"
+
+[features]
+default = []
+vulkan = ["whisper-rs/vulkan"]
+metal = ["whisper-rs/metal"]
+
+[dependencies]
+# Whisper inference
+whisper-rs = "0.16"
+whisper-rs-sys = "0.15"
+
+# Audio resampling
+rubato = "0.16"
+
+# Concurrency
+crossbeam-channel = "0.5"
+
+# EN→ES translation (Opus-MT ONNX)
+ort = { version = "=2.0.0-rc.11", default-features = false, features = ["load-dynamic", "ndarray"] }
+ndarray = "0.16"
+tokenizers = { version = "0.21", default-features = false, features = ["fancy-regex"] }
+
+serde_json = "1"
+
+# Error handling
+thiserror = "2"
+anyhow = "1"
+
+# CLI
+clap = { version = "4", features = ["derive"] }
+
+# Logging
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+
+# Model download
+reqwest = { version = "0.12", features = ["blocking"] }
+indicatif = "0.17"
+
+# Signal handling
+ctrlc = "3"
+
+# Platform: Windows
+[target.'cfg(windows)'.dependencies]
+wasapi = "0.22"
+
+# Platform: macOS
+[target.'cfg(target_os = "macos")'.dependencies]
+screencapturekit = "0.3"
+
+[profile.release]
+lto = true
+codegen-units = 1
+opt-level = 3
